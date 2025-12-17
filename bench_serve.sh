@@ -6,7 +6,7 @@ REQUEST_RATES=("70" "130")
 # Fixed parameters
 MODEL="Qwen/Qwen3-30B-A3B-Instruct-2507"
 DATASET="custom"
-NUM_PROMPTS=200
+NUM_PROMPTS=2000
 OUTPUT_LEN=1
 DATASET_PATH="./synthetic_prompts_sharegpt.jsonl"
 
