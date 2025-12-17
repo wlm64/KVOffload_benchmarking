@@ -3,7 +3,7 @@
 # Define parameter sweeps
 models=("Qwen/Qwen3-30B-A3B-Instruct-2507")
 context_tokens=("0")
-prefill_tokens=("64" "128") # "256" # "512" "1024" "2048")
+prefill_tokens=("64" "128" "256" "512" "1024" "2048")
 DATASET="custom"
 NUM_PROMPTS=200
 OUTPUT_LEN=1
