@@ -6,7 +6,7 @@ from transformers import AutoTokenizer
 from vllm import TokensPrompt  # assuming you're using vLLM
 import numpy as np
 
-for csv in ["sharegpt_effective_prefill.csv", "narrativeqa_token_counts_all_splits.csv", "docfinqa_token_counts_all_splits.csv"]:
+for csv in ["sharegpt_effective_prefill.csv"]: #, "narrativeqa_token_counts_all_splits.csv", "docfinqa_token_counts_all_splits.csv"]:
     # --- Config ---
     input_csv = csv
     output_jsonl = f"synthetic_prompts_{csv.split('_')[0]}.jsonl"
@@ -16,7 +16,7 @@ for csv in ["sharegpt_effective_prefill.csv", "narrativeqa_token_counts_all_spli
     df = pd.read_csv(input_csv)
     
     # Sample N rows randomly
-    sampled = df.sample(n=N, replace=False, random_state=42)
+    sampled = df.sample(n=N, replace=False)
     tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen3-30B-A3B-Instruct-2507")
     
     vocab_words = ["the","be","to","of","and","a","in","that","have","I","it","for","not","on","with","he",

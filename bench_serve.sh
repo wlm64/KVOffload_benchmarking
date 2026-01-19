@@ -24,6 +24,8 @@ for rate in "${REQUEST_RATES[@]}"; do
     echo "Running with request-rate=${rate}"
     echo "============================================="
 
+    python create_synthetic_dataset.py
+    
     # Define log filenames
     POWER_LOG="${LOG_DIR}/power_util_rate_${rate}.csv"
     PCIE_LOG="${LOG_DIR}/pcie_util_rate_${rate}.csv"
