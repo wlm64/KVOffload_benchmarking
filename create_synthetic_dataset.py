@@ -13,7 +13,7 @@ args = parser.parse_args()
 
 if args.dataset == "sharegpt":
     csv_path = "sharegpt_effective_prefill.csv"
-elif args.dataset == "nqa":
+elif args.dataset == "narrativeqa":
     csv_path = "narrativeqa_token_counts_all_splits.csv"
 elif args.dataset == "docfinqa":
     csv_path = "docfinqa_token_counts_all_splits.csv"
@@ -50,12 +50,12 @@ for csv in [csv_path]: #, "narrativeqa_token_counts_all_splits.csv", "docfinqa_t
     for _, row in sampled.iterrows():
         c_tokens = int(row['context_tokens'])
         q_tokens = int(row['question_tokens'])
-        
-        question = " ".join(np.random.choice(vocab_words, size=q_tokens - 1))
-        # --- Decode back into text ---
-        context = "Hi" * (c_tokens - 1) #tokenizer.decode([1] * int(context_tokens), skip_special_tokens=True)
-        prompt = f"{context} {question}"             
-        prompts.append({"prompt": prompt})
+        if (c_tokens + q_tokens) < 131072:
+            question = " ".join(np.random.choice(vocab_words, size=q_tokens - 1))
+            # --- Decode back into text ---
+            context = "Hi" * (c_tokens - 1) #tokenizer.decode([1] * int(context_tokens), skip_special_tokens=True)
+            prompt = f"{context} {question}"             
+            prompts.append({"prompt": prompt})
     
     # --- Save to JSONL ---
     with open(output_jsonl, "w") as f:

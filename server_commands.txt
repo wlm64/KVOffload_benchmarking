@@ -1,1 +1,11 @@
-vllm serve Qwen/Qwen3-235B-A22B-Instruct-2507 --no-enable-prefix-caching --kv-transfer-config '{"kv_connector":"LMCacheConnectorV1", "kv_role":"kv_both"}' --max-num-batched-tokens 131072 --max_model_len 131072 --gpu_memory_utilization .90 --tensor-parallel-size 8
+PYTHONHASHSEED=123 LMCACHE_CONFIG_FILE=example.yaml vllm serve Qwen/Qwen3-235B-A22B-Instruct-2507 --no-enable-prefix-caching --kv-transfer-config '{"kv_connector":"LMCacheConnectorV1", "kv_role":"kv_both"}' --max-num-batched-tokens 131072 --max_model_len 131072 --gpu_memory_utilization .90 --tensor-parallel-size 8
+
+curl -X POST http://localhost:8000/v1/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+        "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+        "prompt": "Explain the significance of KV cache in language models.",
+        "max_tokens": 10
+      }'
+
+PYTHONHASHSEED=123 LMCACHE_CONFIG_FILE=example.yaml vllm serve Qwen/Qwen3-235B-A22B-Instruct-2507 --kv-transfer-config '{"kv_connector":"LMCacheConnectorV1", "kv_role":"kv_both"}' --max-num-batched-tokens 131072 --max_model_len 131072 --gpu_memory_utilization .90 --tensor-parallel-size 8
