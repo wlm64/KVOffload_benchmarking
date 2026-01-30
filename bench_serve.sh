@@ -2,10 +2,10 @@
 
 # Define parameter sweeps
 REQUEST_RATES=("70" "130")
-DATASETS=("narrativeqa" "docfinqa") #"sharegpt" 
+DATASETS=("narrativeqa" "docfinqa" "sharegpt") 
 
 # Fixed parameters
-MODEL="Qwen/Qwen3-235B-A22B-Instruct-2507"
+MODEL= "Qwen/Qwen3-30B-A3B-Instruct-2507" #"Qwen/Qwen3-235B-A22B-Instruct-2507"
 DATASET="custom"
 NUM_PROMPTS=500
 OUTPUT_LEN=1
