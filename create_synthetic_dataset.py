@@ -50,7 +50,7 @@ for csv in [csv_path]: #, "narrativeqa_token_counts_all_splits.csv", "docfinqa_t
     for _, row in sampled.iterrows():
         c_tokens = int(row['context_tokens'])
         q_tokens = int(row['question_tokens'])
-        if (c_tokens + q_tokens) < 131072:
+        if (c_tokens + q_tokens) < 262144:
             question = " ".join(np.random.choice(vocab_words, size=q_tokens - 1))
             # --- Decode back into text ---
             context = "Hi" * (c_tokens - 1) #tokenizer.decode([1] * int(context_tokens), skip_special_tokens=True)

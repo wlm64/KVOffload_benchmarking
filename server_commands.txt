@@ -9,3 +9,5 @@ curl -X POST http://localhost:8000/v1/completions \
       }'
 
 PYTHONHASHSEED=123 LMCACHE_CONFIG_FILE=example.yaml vllm serve Qwen/Qwen3-235B-A22B-Instruct-2507 --kv-transfer-config '{"kv_connector":"LMCacheConnectorV1", "kv_role":"kv_both"}' --max-num-batched-tokens 131072 --max_model_len 131072 --gpu_memory_utilization .90 --tensor-parallel-size 8
+
+PYTHONHASHSEED=123 LMCACHE_CONFIG_FILE=example.yaml vllm serve Qwen/Qwen3-30B-A3B-Instruct-2507 --no-enable-prefix-caching --kv-transfer-config '{"kv_connector":"LMCacheConnectorV1", "kv_role":"kv_both"}' --max-num-batched-tokens 262144 --max_model_len 262144 --gpu_memory_utilization .90 --tensor-parallel-size 8
