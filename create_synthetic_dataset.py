@@ -8,6 +8,8 @@ import numpy as np
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--dataset", type=str, default="sharegpt")
+parser.add_argument("--KT", default=None)
+parser.add_argument("--N", type = int, default=5000)
 
 args = parser.parse_args()
 
@@ -24,13 +26,15 @@ for csv in [csv_path]: #, "narrativeqa_token_counts_all_splits.csv", "docfinqa_t
     # --- Config ---
     input_csv = csv
     output_jsonl = f"synthetic_prompts_{csv.split('_')[0]}.jsonl"
-    N = 5000                        # Number of samples to generate
+    compute_jsonl = f"synthetic_prompts_{csv.split('_')[0]}_compute.jsonl"
+    memory_jsonl = f"synthetic_prompts_{csv.split('_')[0]}_memory.jsonl"
+    N = args.N                        # Number of samples to generate
     
     # --- Load dataset ---
     df = pd.read_csv(input_csv)
     
     # Sample N rows randomly
-    sampled = df.sample(n=N, replace=False)
+    sampled = df.sample(n=N, replace=False, random_state=1)
     tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen3-235B-A22B-Instruct-2507")
     
     vocab_words = ["the","be","to","of","and","a","in","that","have","I","it","for","not","on","with","he",
@@ -46,6 +50,9 @@ for csv in [csv_path]: #, "narrativeqa_token_counts_all_splits.csv", "docfinqa_t
     
     # --- Build prompts ---
     prompts = []
+
+    compute_prompts = []
+    memory_prompts = []
     
     for _, row in sampled.iterrows():
         c_tokens = int(row['context_tokens'])
@@ -56,11 +63,25 @@ for csv in [csv_path]: #, "narrativeqa_token_counts_all_splits.csv", "docfinqa_t
             context = "Hi" * (c_tokens - 1) #tokenizer.decode([1] * int(context_tokens), skip_special_tokens=True)
             prompt = f"{context} {question}"             
             prompts.append({"prompt": prompt})
+            if args.KT:
+                if c_tokens / q_tokens <= args.KT:
+                    compute_prompts.append({"prompt": prompt})
+                else:
+                    memory_prompts.append({"prompt": prompt})
     
     # --- Save to JSONL ---
     with open(output_jsonl, "w") as f:
         for p in prompts:
             json.dump(p, f)
             f.write("\n")
+    if args.KT:
+        with open(compute_jsonl, "w") as f:
+            for p in compute_prompts:
+                json.dump(p, f)
+                f.write("\n")
+        with open(memory_jsonl, "w") as f:
+            for p in memory_prompts:
+                json.dump(p, f)
+                f.write("\n")  
     
     print(f"✅ Saved {len(prompts)} synthetic prompts to {output_jsonl}")
