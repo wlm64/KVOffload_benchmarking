@@ -8,7 +8,7 @@ import numpy as np
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--dataset", type=str, default="sharegpt")
-parser.add_argument("--KT", default=None)
+parser.add_argument("--KT", type = int, default=None)
 parser.add_argument("--N", type = int, default=5000)
 
 args = parser.parse_args()
