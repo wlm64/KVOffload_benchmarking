@@ -3,7 +3,6 @@ import json
 import random
 import string
 from transformers import AutoTokenizer
-from vllm import TokensPrompt  # assuming you're using vLLM
 import numpy as np
 import argparse
 parser = argparse.ArgumentParser()
@@ -26,8 +25,8 @@ for csv in [csv_path]: #, "narrativeqa_token_counts_all_splits.csv", "docfinqa_t
     # --- Config ---
     input_csv = csv
     output_jsonl = f"synthetic_prompts_{csv.split('_')[0]}.jsonl"
-    compute_jsonl = f"synthetic_prompts_{csv.split('_')[0]}_compute.jsonl"
-    memory_jsonl = f"synthetic_prompts_{csv.split('_')[0]}_memory.jsonl"
+    compute_jsonl = f"synthetic_prompts_{csv.split('_')[0]}_KT_{args.KT}_compute.jsonl"
+    memory_jsonl = f"synthetic_prompts_{csv.split('_')[0]}_KT_{args.KT}_memory.jsonl"
     N = args.N                        # Number of samples to generate
     
     # --- Load dataset ---
