@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Define parameter sweeps
-models=("Qwen/Qwen3-30B-A3B-Instruct-2507")
-context_tokens=("1024" "2048" "4096" "8192" "16384" "32768" "65536")
-prefill_tokens=("64" "128" "256" "512" "1024" "2048")
+models=("Qwen/Qwen3-235B-A22B-Instruct-2507") # "Qwen/Qwen3-235B-A22B-Instruct-2507" "deepseek-ai/DeepSeek-V2")
+context_tokens=("128" "1024" "2048" "4096" "8192" "12800" "16384" "32768" "65536" "131072")
+prefill_tokens=("128" "512")
 DATASET="custom"
 NUM_PROMPTS=200
 OUTPUT_LEN=1
@@ -19,7 +19,7 @@ for MODEL in "${models[@]}"; do
             vllm bench serve \
                 --model "$MODEL" \
                 --dataset-name "$DATASET" \
-                --dataset-path "offload_datasets/Qwen/Qwen3-30B-A3B-Instruct-2507/synthetic_prompts_${context}_${prefill}.jsonl" \
+                --dataset-path "offload_datasets/Qwen/Qwen3-235B-A22B-Instruct-2507/synthetic_prompts_${context}_${prefill}.jsonl" \
                 --num-prompts "$NUM_PROMPTS" \
                 --result-dir "${LOG_DIR}" \
                 --result-filename "benchmark_results_rate_${context}_${prefill}.log" \
