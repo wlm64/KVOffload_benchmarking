@@ -19,11 +19,11 @@ BW_PCIe_H100 = 64
 BW_PCIe_A100 = 32
 
 A100_CEFF = 312
-H100_CEFF = 1000
-B200_CEFF = 2500
+H100_CEFF = 1000 
+B200_CEFF = 2500 
 
 A100_COST = 27 / 3600
-H100_COST = 55 / 3600
+H100_COST = 63.6 / 3600
 B200_COST = 114 / 3600
 
 plt.rcParams.update({
@@ -144,6 +144,23 @@ def run_pareto(df_base, thresholds,
         ttfts = np.array(ttfts)
         kts = np.array(kts)
 
+        # =========================================
+        # BASELINE POINT (threshold = 0)
+        # =========================================
+        baseline_cost_pt = costs[0]
+        baseline_ttft_pt = ttfts[0]
+        print(baseline_cost_pt)
+        print(baseline_ttft_pt)
+        plt.scatter(
+            baseline_cost_pt,
+            baseline_ttft_pt,
+            color="black",
+            marker="x",
+            s=100,
+            zorder=7,
+            label="H200 baseline" if model_name == list(models.keys())[0] else None
+        )
+
         # Scatter all points
         plt.scatter(costs, ttfts, color=color, alpha=0.2)
 
@@ -169,10 +186,13 @@ def run_pareto(df_base, thresholds,
         plt.annotate(
             "$K_{CM}$" + f"={best[2]:.0f}",
             xy=(best[0], best[1]),
-            xytext=(best[0] - .025, best[1] - 0.05),
+            xytext=(best[0] - .01, best[1] - 0.05),
             arrowprops=dict(arrowstyle="->"),
             fontsize=13
         )
+        
+        print("$K_{CM}$: \n")
+        print(best)
 
         # =========================================
         # 95% TTFT POINT
@@ -192,6 +212,9 @@ def run_pareto(df_base, thresholds,
                 arrowprops=dict(arrowstyle="->"),
                 fontsize=13
             )
+            
+            print("$K_{ISO}$: \n")
+            print(pt)
 
     # Reference lines
     plt.axhline(1.0, linestyle="--", linewidth=1)
@@ -204,6 +227,7 @@ def run_pareto(df_base, thresholds,
 
     plt.tight_layout()
     plt.savefig(outfile, dpi=300)
+    plt.show()
     plt.close()
 
     print(f"✅ Saved {outfile}")
