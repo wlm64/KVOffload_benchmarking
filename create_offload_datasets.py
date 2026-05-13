@@ -18,10 +18,10 @@ vocab_words = ["the","be","to","of","and","a","in","that","have","I","it","for",
     "said","goes","went","make","makes","made","know","knows","knew","think","thinks","thought",
     "see","sees","saw","come","comes","came","take","takes","took","want","wants","wanted"]
 
-for model in ["Qwen/Qwen3-30B-A3B-Instruct-2507"]:
+for model in ["Qwen/Qwen3-235B-A22B-Instruct-2507"]:
     os.makedirs(f"./offload_datasets/{model}", exist_ok=True)
-    for context_tokens in [0, 1024, 2048, 4096, 8192, 16384, 32768, 65536]:
-        for prefill in [16, 32, 64, 128, 256, 512, 1024, 2048]:
+    for context_tokens in [128, 1024, 2048, 4096, 8192, 12800, 16384, 32768, 65536, 131072]:
+        for prefill in [128, 512]:
             print(model + str(context_tokens) + str(prefill))
             output_jsonl = f"./offload_datasets/{model}/synthetic_prompts_{context_tokens}_{prefill}.jsonl"
             N = 500                        # Number of samples to generate
