@@ -19,7 +19,7 @@ def main():
         print("K=0: no prefix to prime")
         return
     payload = {"model": args.model, "prompt": prefix,
-               "max_tokens": 1, "temperature": 0, "stream": False}
+               "max_tokens": 1, "temperature": 0, "stream": False, "add_special_tokens": False,}
     request = Request(
         args.base_url.rstrip("/") + "/v1/completions",
         data=json.dumps(payload).encode("utf-8"),

@@ -5,15 +5,16 @@ set -euo pipefail
 # Example: vllm serve Qwen/Qwen3-30B-A3B-Instruct-2507 \
 #   --tensor-parallel-size 8 --enable-prefix-caching --port 8000
 
+#MODEL="${MODEL:-meta-llama/Llama-3.1-70B}"
 MODEL="${MODEL:-Qwen/Qwen3-235B-A22B-Instruct-2507}"
 BASE_URL="${BASE_URL:-http://127.0.0.1:8000}"
 API_KEY="${OPENAI_API_KEY:-EMPTY}"
-NUM_PROMPTS="${NUM_PROMPTS:-200}"
+NUM_PROMPTS="${NUM_PROMPTS:-1000}"
 BLOCK_SIZE="${BLOCK_SIZE:-16}"
 DATASET_ROOT="${DATASET_ROOT:-offload_datasets}"
 LOG_ROOT="${LOG_ROOT:-kv_no_offload_warm}"
 # Override via Bash arrays below for your model's max context and GPU capacity.
-context_tokens=(0 1024 2048 4096 8192 16384 32768 65536)
+context_tokens=(128 256 512) #(1024 2048 4096 8192 16384 32768 65536)
 prefill_tokens=(64 128 256 512 1024 2048)
 
 for K in "${context_tokens[@]}"; do
@@ -44,6 +45,8 @@ for K in "${context_tokens[@]}"; do
       --num-prompts "$NUM_PROMPTS" --custom-output-len 1 \
       --request-rate inf --disable-shuffle \
       --percentile-metrics ttft --metric-percentiles 50,95,99 \
+      --extra-body '{"add_special_tokens":false}' \
+      --skip-chat-template \
       --result-dir "$LOG_DIR" \
       --result-filename "benchmark_results_${K}_${T}.json" \
       --save-result --save-detailed
