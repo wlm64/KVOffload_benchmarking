@@ -84,7 +84,7 @@ for folder in os.listdir(root_dir):
     for i, prefill in enumerate(prefill_values):
         if prefill <= 2048:
             df_prefill = df_plot[df_plot.index == prefill].set_index("KV")
-            heights = df_prefill["normalized_ttft"].reindex(kv_sizes).values - 1
+            heights = df_prefill["normalized_duration"].reindex(kv_sizes).values - 1
             errors = df_prefill["std_normalized"].reindex(kv_sizes).values
             ax.bar(
                 x + i*width,
@@ -115,6 +115,53 @@ for folder in os.listdir(root_dir):
     plt.show()
     plt.close()
     print(f"✅ Saved plot: {out_path}")
+    
+    # --- Plot P_OH vs K_ratio ---
+    fig, ax = plt.subplots(figsize=(10, 6.5))
+    
+    for prefill in prefill_values:
+        df_prefill = df_plot[df_plot.index == prefill].copy()
+    
+        # Sort points by K_ratio so lines connect correctly
+        df_prefill = df_prefill.sort_values("K/T")
+    
+        x_vals = df_prefill["K/T"].values
+        y_vals = df_prefill["normalized_ttft"].values - 1
+        errors = df_prefill["std_normalized"].values
+    
+        ax.errorbar(
+            x_vals,
+            y_vals,
+            yerr=errors,
+            marker="o",
+            markersize=6,
+            linewidth=2,
+            capsize=4,
+            label=f"Prefill={prefill}"
+        )
+    
+    # Labels and formatting
+    ax.set_xlabel(r"$K_{\mathrm{ratio}}$")
+    ax.set_ylabel(r"$P_{OH}$")
+    
+    ax.grid(axis="both", linestyle="--", alpha=0.5)
+    ax.legend()
+    
+    fig.tight_layout(rect=[0, 0, 1, 1])
+    plt.xlim(0,100)
+    plt.ylim(0,20)
+    out_path = os.path.join(
+        output_dir,
+        f"{folder}_poh_vs_kratio.png"
+    )
+    
+    plt.savefig(out_path, dpi=300)
+    plt.show()
+    plt.close()
+    
+    print(f"✅ Saved plot: {out_path}")
     df_plot = pd.concat([df_plot, kv0])
+    
+ 
 
 print("✅ All grouped bar charts saved.")

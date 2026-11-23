@@ -1,0 +1,3 @@
+vllm:prefix_cache_hits: +3268608 tokens
+vllm:prefix_cache_queries: +3291200 tokens
+Observed cached tokens/request: 16343.0; intended K=16384

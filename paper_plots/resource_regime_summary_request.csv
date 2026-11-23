@@ -1,0 +1,19 @@
+dataset,model,regime,count,total_valid_requests,percentage,factor_mode
+ShareGPT,LLaMA-3.1-70B,Compute-bound,116217,685325,16.957939663663225,request
+ShareGPT,LLaMA-3.1-70B,Mixed,50213,685325,7.326888702440448,request
+ShareGPT,LLaMA-3.1-70B,Memory-bound,518895,685325,75.71517163389633,request
+ShareGPT,Qwen3-235B-A22B,Compute-bound,104655,685325,15.270856892715136,request
+ShareGPT,Qwen3-235B-A22B,Mixed,34091,685325,4.974428191004268,request
+ShareGPT,Qwen3-235B-A22B,Memory-bound,546579,685325,79.75471491628059,request
+FinQA,LLaMA-3.1-70B,Compute-bound,0,7437,0.0,request
+FinQA,LLaMA-3.1-70B,Mixed,0,7437,0.0,request
+FinQA,LLaMA-3.1-70B,Memory-bound,7437,7437,100.0,request
+FinQA,Qwen3-235B-A22B,Compute-bound,0,7437,0.0,request
+FinQA,Qwen3-235B-A22B,Mixed,0,7437,0.0,request
+FinQA,Qwen3-235B-A22B,Memory-bound,7437,7437,100.0,request
+Mooncake ToolAgent,LLaMA-3.1-70B,Compute-bound,15354,23335,65.79815727448039,request
+Mooncake ToolAgent,LLaMA-3.1-70B,Mixed,4069,23335,17.43732590529248,request
+Mooncake ToolAgent,LLaMA-3.1-70B,Memory-bound,3912,23335,16.764516820227126,request
+Mooncake ToolAgent,Qwen3-235B-A22B,Compute-bound,12885,23335,55.21748446539533,request
+Mooncake ToolAgent,Qwen3-235B-A22B,Mixed,5955,23335,25.519605742446966,request
+Mooncake ToolAgent,Qwen3-235B-A22B,Memory-bound,4495,23335,19.262909792157703,request
