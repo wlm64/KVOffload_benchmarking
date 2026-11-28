@@ -49,12 +49,18 @@ models = {
 # TTFT FUNCTION
 # =========================================
 
-def compute_ttft(K, T, model_size, kv_bytes, Ceff, BW_PCIe):
+def compute_ttft(K, T, model_size, kv_bytes, Ceff, BW_PCIe, overlap=False):
     F_pf = 2 * model_size * 1e9
-    t_pcie = (K * kv_bytes * 1e12) / BW_PCIe
-    t_prefill = (T * F_pf) / Ceff
-    return t_pcie + t_prefill
 
+    t_pcie = (K * kv_bytes) / BW_PCIe
+    t_prefill = (T * F_pf) / (Ceff * 1e12)
+    
+    # import pdb; pdb.set_trace()
+    if overlap:
+        return np.maximum(t_pcie, t_prefill)
+    else:
+        return t_pcie + t_prefill
+    
 # =========================================
 # PARETO FUNCTION (WITH KT)
 # =========================================
@@ -100,6 +106,16 @@ def run_pareto(df_base, thresholds,
             fast_ceff,
             fast_pcie
         )
+        
+        df["ttft_cacheblend"] = compute_ttft(
+            df["context_tokens"],
+            df["question_tokens"],
+            model_size,
+            kv_bytes,
+            fast_ceff,
+            fast_pcie,
+            overlap=True
+        )
 
         df["ttft_slow"] = compute_ttft(
             df["context_tokens"],
@@ -109,9 +125,16 @@ def run_pareto(df_base, thresholds,
             slow_ceff,
             slow_pcie
         )
+        
 
         baseline_ttft = df["ttft_fast"].sum()
         baseline_cost = (df["ttft_fast"] * fast_cost).sum()
+        
+        cacheblend_ttft = df["ttft_cacheblend"].sum()
+        cacheblend_cost = (df["ttft_cacheblend"] * fast_cost).sum()
+        
+        cacheblend_norm_ttft = baseline_ttft / cacheblend_ttft
+        cacheblend_norm_cost = cacheblend_cost / baseline_cost
 
         costs = []
         ttfts = []
@@ -159,6 +182,18 @@ def run_pareto(df_base, thresholds,
             s=100,
             zorder=7,
             label="H200 baseline" if model_name == list(models.keys())[0] else None
+        )
+        
+        plt.scatter(
+            cacheblend_norm_cost,
+            cacheblend_norm_ttft,
+            color=color,
+            marker="^",
+            edgecolors="black",   # optional, helps distinguish it
+            linewidths=1.2,
+            s=140,
+            zorder=7,
+            label="CacheBlend" if model_name == list(models.keys())[0] else None
         )
 
         # Scatter all points
@@ -271,19 +306,19 @@ for csv in csv_list:
         outfile=f"pareto_H100_B200_{dataset}.png"
     )
 
-    # =========================================
-    # A100 vs H100
-    # =========================================
-    run_pareto(
-        df_base,
-        thresholds,
-        fast_name="H100",
-        fast_ceff=H100_CEFF,
-        fast_cost=H100_COST,
-        fast_pcie=BW_PCIe_H100,
-        slow_name="A100",
-        slow_ceff=A100_CEFF,
-        slow_cost=A100_COST,
-        slow_pcie=BW_PCIe_A100,
-        outfile=f"pareto_A100_H100_{dataset}.png"
-    )
+    # # =========================================
+    # # A100 vs H100
+    # # =========================================
+    # run_pareto(
+    #     df_base,
+    #     thresholds,
+    #     fast_name="H100",
+    #     fast_ceff=H100_CEFF,
+    #     fast_cost=H100_COST,
+    #     fast_pcie=BW_PCIe_H100,
+    #     slow_name="A100",
+    #     slow_ceff=A100_CEFF,
+    #     slow_cost=A100_COST,
+    #     slow_pcie=BW_PCIe_A100,
+    #     outfile=f"pareto_A100_H100_{dataset}.png"
+    # )

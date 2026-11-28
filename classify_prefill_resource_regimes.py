@@ -208,7 +208,7 @@ def make_plot(summary_df, outdir, factor_mode):
                             fontsize=10, weight="semibold")
             bottom += np.nan_to_num(vals)
 
-        ax.set_title(model_name)
+        # ax.set_title(model_name)
         ax.set_xticks(x, labels)
         ax.set_ylim(0, 100)
         ax.set_yticks(np.arange(0, 101, 20))

@@ -16,9 +16,17 @@ BW_PCIe = 64  # PCIe bandwidth (bytes/sec)
 
 gpus = {
     "A100": 312,
-    "H100": 1000,
-    "B200": 2500
+    "H100": 2000,
+    "B200": 4500
 }
+
+plt.rcParams.update({
+    "axes.titlesize": 20,
+    "axes.labelsize": 20,
+    "xtick.labelsize": 20,
+    "ytick.labelsize": 20,
+    "legend.fontsize": 20,
+})
 
 # ---- DEFINE YOUR MODELS HERE ----
 # B_kv: bytes per token
@@ -52,9 +60,11 @@ def compute_ttft(K, T, size, B_kv, Ceff):
 # Plot H100 / B200 (normalized by B200)
 # =========================================
 
-plt.figure(figsize=(10, 6))
+plt.figure(figsize=(6, 4))
 
 colors = plt.cm.tab20(np.linspace(0, 1, len(models)))
+
+qwen_share_y = None
 
 for (model_name, specs), color in zip(models.items(), colors):
 
@@ -76,16 +86,17 @@ for (model_name, specs), color in zip(models.items(), colors):
         ratio_curve,
         linewidth=2,
         label=model_name,
-        color = color
+        color=color
     )
 
-    # Compute ShareGPT point
+    # ShareGPT point
     K_share = sharegpt_ratio * T
     ttft_h100 = compute_ttft(K_share, T, size, B_kv, gpus["H100"])
     ttft_b200 = compute_ttft(K_share, T, size, B_kv, gpus["B200"])
     y_share = ttft_h100 / ttft_b200
 
-#    plt.scatter(sharegpt_ratio, y_share, zorder=5)
+    if model_name == "Qwen3-235B-A22B":
+        qwen_share_y = y_share
 
 
 # Vertical ShareGPT line
@@ -97,6 +108,42 @@ plt.text(
     verticalalignment="top"
 )
 
+# -------------------------------------------------------
+# Annotate Qwen3-235B speedup at ShareGPT
+# -------------------------------------------------------
+if qwen_share_y is not None:
+
+    # Highlight the point
+    plt.scatter(
+        sharegpt_ratio,
+        qwen_share_y,
+        color="black",
+        s=40,
+        zorder=10,
+    )
+    
+    # Arrow from the point to the middle of the figure
+    plt.annotate(
+        f"{qwen_share_y:.2f}× TTFT\nSpeedup",
+        xy=(sharegpt_ratio, qwen_share_y),      # arrow starts here
+        xytext=(700, 1.7),                      # label location
+        fontsize=13,
+        ha="left",
+        va="center",
+        arrowprops=dict(
+            arrowstyle="->",
+            lw=2,
+            color="black",
+            shrinkA=0,
+            shrinkB=5,
+        ),
+        bbox=dict(
+            boxstyle="round,pad=0.3",
+            fc="white",
+            ec="black",
+            alpha=0.9,
+        ),
+    )
 plt.axhline(1.0, linestyle="--", linewidth=1)
 
 plt.xlabel(r"$\kappa_{\mathrm{ratio}}$")
@@ -107,6 +154,7 @@ plt.grid(True, alpha=0.3)
 
 plt.tight_layout()
 plt.savefig("h100_vs_b200_sharegpt.png", dpi=300)
+plt.show()
 plt.close()
 
 print("✅ Saved H100 vs B200 comparison with ShareGPT marker")
